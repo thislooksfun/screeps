@@ -1,0 +1,23 @@
+{
+  "name": "tlf-screeps",
+  "version": "1.0.0",
+  "description": "Screeps scripts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thislooksfun/screeps.git"
+  },
+  "author": "thislooksfun",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/thislooksfun/screeps/issues"
+  },
+  "homepage": "https://github.com/thislooksfun/screeps#readme",
+  "dependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-coffee": "^1.0.0",
+    "grunt-screeps": "^1.2.1"
+  }
+}

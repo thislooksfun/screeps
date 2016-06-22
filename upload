@@ -1,0 +1,10 @@
+coffee -b -o dist -c coffee
+
+if [ -n "${1+x}" ]; then
+  echo "Branch! $1"
+  grunt screeps --branch="$1"
+else
+  grunt screeps
+fi
+
+# rm -r dist
