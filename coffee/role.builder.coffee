@@ -2,7 +2,7 @@ module.exports =
   
   body: [WORK, CARRY, MOVE]
   
-  countPerRoom: 3
+  countPerRoom: 1
   
   ### @param {Creep} creep ###
   run: (creep) ->

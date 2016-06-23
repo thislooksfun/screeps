@@ -7,19 +7,21 @@ roles =
   builder: require('role.builder')
   warrior: require('role.warrior')
 
-require('extension.base')
-require('extension.harvest')
+require('extension.creep.base')
+require('extension.creep.harvest')
 # require('extension.transfer')
-require('extension.build')
-# require('extension.upgrade')
+require('extension.creep.build')
+require('extension.creep.upgrade')
 
 module.exports.loop = ->
   
+  delegators.resource.loadResources()
+  
   purgeMemory()
   
-  if Game.spawns.Spawn1.room.find(FIND_CONSTRUCTION_SITES).length is 0
-    roles.builder.countPerRoom = 1
-    roles.upgrader.countPerRoom = 3
+  # if Game.spawns.Spawn1.room.find(FIND_CONSTRUCTION_SITES).length is 0
+  #   roles.builder.countPerRoom = 1
+  #   roles.upgrader.countPerRoom = 3
     
   
   processMinMax()
@@ -46,11 +48,10 @@ processMinMax = ->
     
     unless didSpawn
       didSpawn = true if ensureMin(roleName, min, role.body)
-    unless roleName is 'harvester' and max <= 0
-      purgeMax(roleName, max)
-    else
+    if roleName is 'harvester' and max <= 0
       console.err 'Aborted -- tried to purge the last harvester!'
-
+    else
+      purgeMax(roleName, max)
 
 ensureMin = (role, minCount, body) ->
   inRole = _.filter Game.creeps, (creep) -> return creep.memory.role is role
@@ -81,3 +82,33 @@ purgeMemory = ->
     if not Game.creeps[name]?
       delete Memory.creeps[name]
   return #Block auto-return
+
+
+
+
+
+# droneCost = (attrList) ->
+#   return unless attrList?
+#   sum = 0
+#   for attr in attrList
+#     sum += BODYPART_COST[attr]
+#   return sum
+#
+# getOptimalBody = (spawn) ->
+#   body = []
+#   stats = spawnUtility.getSpawnStats spawn
+#
+#   carryPart = Math.ceil(stats.parts / 5);
+#
+#   for (var i = 0; i < carryPart; i++)
+#     body.push(MOVE)
+#     body.push(CARRY)
+#
+#   while spawnUtility.getBodyCost(body) < stats.energy && body.length < stats.parts
+#     body.push(MOVE)
+#     body.push(WORK)
+#
+#   while spawnUtility.getBodyCost(body) > stats.energy || body.length > stats.parts
+#     body.pop()
+#
+#   return body

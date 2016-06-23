@@ -1,3 +1,7 @@
+mkdir compilefrom
+
+# cp
+
 coffee -b -o dist -c coffee
 
 if [ -n "${1+x}" ]; then
@@ -7,4 +11,5 @@ else
   grunt screeps
 fi
 
-# rm -r dist
+rm -r compilefrom
+rm -r dist

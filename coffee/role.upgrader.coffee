@@ -6,10 +6,13 @@ module.exports =
   
   ### @param {Creep} creep ###
   run: (creep) ->
-    if creep.carry.energy is 0
-      sources = creep.room.find FIND_SOURCES
-      if creep.harvest(sources[0]) is ERR_NOT_IN_RANGE
-        creep.moveTo sources[0]
-    else if creep.upgradeController(creep.room.controller) is ERR_NOT_IN_RANGE
-      creep.moveTo creep.room.controller
+    if creep.memory.isUpgrading and creep.carry.energy is 0
+      creep.memory.isUpgrading = false
+    if not creep.memory.isUpgrading and creep.carry.energy is creep.carryCapacity
+      creep.memory.isUpgrading = true
+    
+    if creep.memory.isUpgrading
+      creep.aiUpgrade()
+    else
+      creep.aiHarvest()
     return #Block auto-return
