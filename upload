@@ -1,8 +1,13 @@
 mkdir compilefrom
 
-# cp
+cd coffee
+for f in $(find . -name '*.coffee'); do
+  f1="${f/.\//}"
+  cp $f "../compilefrom/${f1//\//.}"
+done
+cd ..
 
-coffee -b -o dist -c coffee
+coffee -b -o dist -c compilefrom
 
 if [ -n "${1+x}" ]; then
   echo "Branch! $1"
