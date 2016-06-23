@@ -26,12 +26,14 @@ module.exports =
     sourceY = source.pos.y
     
     paths = 0
+    count = 0
     
     for transform in transforms
       if isTileWalkable room, sourceX + transform.x, sourceY + transform.y
         paths |= transform.path
+        count++
     
-    return paths
+    return {paths: paths, count: count}
 
 PATH =
   UP_LEFT: 1<<0

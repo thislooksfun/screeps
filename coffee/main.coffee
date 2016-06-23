@@ -2,6 +2,7 @@ delegators =
   resource: require('delegator.resource')
 
 roles =
+  # worker: require 'role.worker'
   harvester: require('role.harvester')
   upgrader: require('role.upgrader')
   builder: require('role.builder')
@@ -9,23 +10,18 @@ roles =
 
 require('extension.creep.base')
 require('extension.creep.harvest')
-# require('extension.transfer')
+require('extension.creep.transfer')
 require('extension.creep.build')
 require('extension.creep.upgrade')
+require('extension.structure.storage')
 
 module.exports.loop = ->
   
   delegators.resource.loadResources()
   
   purgeMemory()
-  
-  # if Game.spawns.Spawn1.room.find(FIND_CONSTRUCTION_SITES).length is 0
-  #   roles.builder.countPerRoom = 1
-  #   roles.upgrader.countPerRoom = 3
-    
-  
   processMinMax()
-    
+  
   for name, creep of Game.creeps
     roles[creep.memory.role]?.run creep
   return #Block auto-return
@@ -82,9 +78,6 @@ purgeMemory = ->
     if not Game.creeps[name]?
       delete Memory.creeps[name]
   return #Block auto-return
-
-
-
 
 
 # droneCost = (attrList) ->
