@@ -76,6 +76,8 @@ purgeMax = (role, maxCount) ->
 purgeMemory = ->
   for name of Memory.creeps
     if not Game.creeps[name]?
+      if Memory.creeps[name].harvestTarget?
+        delegators.resource.stoppedHarvestingAt Memory.creeps[name].harvestTarget
       delete Memory.creeps[name]
   return #Block auto-return
 
