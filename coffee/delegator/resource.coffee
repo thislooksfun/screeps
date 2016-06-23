@@ -10,6 +10,71 @@ module.exports =
     return #Block auto-return
   
   
+  getFreeSourceHarvestLocationInRoom: (room) ->
+    resources = Memory.delegators?.resources?[room.name]
+    unless resources?
+      @loadResources()
+      resources = Memory.delegators?.resources?[room.name]
+      return null unless resources?  #If they don't exist by this point, there's nothing I can do
+    for posStr, data of resources
+      continue unless data.freeTiles
+      pos = posStr.split ','
+      x = parseInt pos[0]
+      y = parseInt pos[1]
+      path = 0
+      if data.freeTiles & PATH.UP_LEFT
+        path = PATH.UP_LEFT
+        x -= 1
+        y -= 1
+      else if data.freeTiles & PATH.UP
+        path = PATH.UP
+        # x += 0
+        y -= 1
+      else if data.freeTiles & PATH.UP_RIGHT
+        path = PATH.UP_RIGHT
+        x += 1
+        y -= 1
+      else if data.freeTiles & PATH.LEFT
+        path = PATH.LEFT
+        x -= 1
+        # y += 0
+      else if data.freeTiles & PATH.RIGHT
+        path = PATH.RIGHT
+        x += 1
+        # y += 0
+      else if data.freeTiles & PATH.DOWN_LEFT
+        path = PATH.DOWN_LEFT
+        x -= 1
+        y += 1
+      else if data.freeTiles & PATH.DOWN
+        path = PATH.DOWN
+        # x += 0
+        y += 1
+      else if data.freeTiles & PATH.DOWN_RIGHT
+        path = PATH.DOWN_RIGHT
+        x += 1
+        y += 1
+      
+      data.freeTiles &= ~path
+      flags = room.lookForAt LOOK_FLAGS, x, y
+      flag.remove() for flag in flags
+      room.createFlag(x, y, null, COLOR_YELLOW)
+      return {sourceID: data.sourceID, pos: new RoomPosition(x, y, room.name), path: path}
+    return null
+  
+  
+  stoppedHarvestingAt: ({pos, path}) ->
+    resources = Memory.delegators?.resources?[pos.roomName]
+    transform = transforms["#{path}"]
+    x = pos.x - transform.x
+    y = pos.y - transform.y
+    resources["#{x},#{y}"].freeTiles |= path
+    room = Game.rooms[pos.roomName]
+    flags = room.lookForAt LOOK_FLAGS, pos.x, pos.y
+    flag.remove() for flag in flags
+    room.createFlag(pos.x, pos.y, null, COLOR_GREEN)
+  
+  
   loadResourcesForRoom: (room) ->
     paths = {}
     
@@ -19,21 +84,22 @@ module.exports =
       paths["#{source.pos.x},#{source.pos.y}"] = @calculateValidPathsForSource source, room
     
     Memory.delegators.resources[room.name] = paths
+    
     return #Block auto-return
   
   calculateValidPathsForSource: (source, room) ->
     sourceX = source.pos.x
     sourceY = source.pos.y
     
-    paths = 0
+    tiles = 0
     count = 0
     
-    for transform in transforms
+    for transform in transformArray
       if isTileWalkable room, sourceX + transform.x, sourceY + transform.y
-        paths |= transform.path
+        tiles |= transform.path
         count++
     
-    return {paths: paths, count: count}
+    return {sourceID: source.id, freeTiles: tiles}
 
 PATH =
   UP_LEFT: 1<<0
@@ -45,7 +111,17 @@ PATH =
   DOWN: 1<<6
   DOWN_RIGHT: 1<<7
 
-transforms = [
+transforms =
+  "#{PATH.UP_LEFT}": {x: -1, y: -1}
+  "#{PATH.UP}": {x: 0, y: -1}
+  "#{PATH.UP_RIGHT}": {x: 1, y: -1}
+  "#{PATH.LEFT}": {x: -1, y: 0}
+  "#{PATH.RIGHT}": {x: 1, y: 0}
+  "#{PATH.DOWN_LEFT}": {x: -1, y: 1}
+  "#{PATH.DOWN}": {x: 0, y: 1}
+  "#{PATH.DOWN_RIGHT}": {x: 1, y: 1}
+
+transformArray = [
   {x: -1, y: -1, path: PATH.UP_LEFT},
   {x: 0, y: -1, path: PATH.UP},
   {x: 1, y: -1, path: PATH.UP_RIGHT},

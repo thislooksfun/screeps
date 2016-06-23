@@ -1,6 +1,8 @@
 module.exports =
   countPerRoom: 4
-  body: [WORK, CARRY, MOVE] #TODO: make dynamic
+  body: ->
+    #TODO: make dynamic
+    return [WORK, CARRY, MOVE]
   
   run: (creep) ->
     # TODO: Adapt work based on needed tasks

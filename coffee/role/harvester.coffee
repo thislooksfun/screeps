@@ -1,8 +1,9 @@
 module.exports =
   
-  body: [WORK, CARRY, MOVE]
+  body: ->
+    return [WORK, CARRY, MOVE]
   
-  countPerRoom: 3
+  countPerRoom: 4
   
   ### @param {Creep} creep ###
   run: (creep) ->
@@ -10,6 +11,7 @@ module.exports =
     if creep.carry.energy < creep.carryCapacity
       creep.aiHarvest()
     else
+      creep.aiDoneHarvesting()
       unless creep.aiTransferEnergy()
         creep.aiBuild()
     return #Block auto-return

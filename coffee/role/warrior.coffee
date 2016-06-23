@@ -1,6 +1,7 @@
 module.exports =
   
-  body: [ATTACK, ATTACK, RANGED_ATTACK, MOVE, MOVE]
+  body: ->
+    return [ATTACK, ATTACK, RANGED_ATTACK, MOVE, MOVE]
   
   countPerRoom: 0
   

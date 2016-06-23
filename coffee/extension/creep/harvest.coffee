@@ -1,10 +1,20 @@
+resourceDelegator = require 'delegator.resource'
+
 Creep::aiHarvest = ->
-  harvestTarget = Game.getObjectById(@memory.harvestTarget ? '')
-  unless harvestTarget and @room.lookForAt(LOOK_SOURCES, harvestTarget)
-    harvestTarget = @aiGetAndStoreTarget FIND_SOURCES, 'harvestTarget'
+  source = Game.getObjectById(@memory.harvestTarget?.sourceID ? '')
+  unless source and @room.lookForAt(LOOK_SOURCES, source)
+    output = resourceDelegator.getFreeSourceHarvestLocationInRoom @room
+    @memory.harvestTarget = output
+    return false unless @memory.harvestTarget?
+    source = Game.getObjectById(@memory.harvestTarget?.sourceID ? '')
   
-  return false unless harvestTarget?
+  return false unless source?
   
-  if @harvest(harvestTarget) is ERR_NOT_IN_RANGE
-    @moveTo harvestTarget
+  if @harvest(source) is ERR_NOT_IN_RANGE
+    @moveTo @memory.harvestTarget.pos.x, @memory.harvestTarget.pos.y
   return true
+
+Creep::aiDoneHarvesting = ->
+  return true unless @memory.harvestTarget?
+  resourceDelegator.stoppedHarvestingAt @memory.harvestTarget
+  delete @memory.harvestTarget

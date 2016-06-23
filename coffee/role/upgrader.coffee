@@ -1,6 +1,7 @@
 module.exports =
   
-  body: [WORK, CARRY, MOVE]
+  body: ->
+    return [WORK, CARRY, MOVE]
   
   countPerRoom: 2
   
@@ -12,6 +13,7 @@ module.exports =
       creep.memory.isUpgrading = true
     
     if creep.memory.isUpgrading
+      creep.aiDoneHarvesting()
       creep.aiUpgrade()
     else
       creep.aiHarvest()

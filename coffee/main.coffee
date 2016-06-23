@@ -43,7 +43,7 @@ processMinMax = ->
       continue
     
     unless didSpawn
-      didSpawn = true if ensureMin(roleName, min, role.body)
+      didSpawn = true if ensureMin(roleName, min, role.body())
     if roleName is 'harvester' and max <= 0
       console.err 'Aborted -- tried to purge the last harvester!'
     else
@@ -103,5 +103,24 @@ purgeMemory = ->
 #
 #   while spawnUtility.getBodyCost(body) > stats.energy || body.length > stats.parts
 #     body.pop()
+#
+#   return body
+#
+# buildOptimizedWorker = (currentRoom) ->
+#   maxEnergy = currentRoom.energyCapacityAvailable
+#   energyUsed = 0
+#   partsMove = Math.floor maxEnergy / 50 / 5
+#   partsCarry = partsMove
+#   energyUsed += partsMove * 50
+#   energyUsed += partsCarry * 50
+#   partsWork = Math.floor (maxEnergy - energyUsed) / 100
+#   body = []
+#
+#   for i in [0...partsMove]
+#     body.push MOVE
+#   for i in [0...partsCarry]
+#     body.push CARRY
+#   for i in [0...partsWork]
+#     body.push WORK
 #
 #   return body
