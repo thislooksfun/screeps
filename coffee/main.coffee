@@ -2,10 +2,8 @@ delegators =
   resource: require('delegator.resource')
 
 roles =
-  # worker: require 'role.worker'
-  harvester: require('role.harvester')
+  worker: require 'role.worker'
   upgrader: require('role.upgrader')
-  builder: require('role.builder')
   warrior: require('role.warrior')
 
 require('extension.creep.base')
@@ -44,8 +42,8 @@ processMinMax = ->
     
     unless didSpawn
       didSpawn = true if ensureMin(roleName, min, role.body())
-    if roleName is 'harvester' and max <= 0
-      console.err 'Aborted -- tried to purge the last harvester!'
+    if roleName is 'worker' and max <= 0
+      console.error 'Aborted -- tried to purge the last worker!'
     else
       purgeMax(roleName, max)
 
@@ -110,10 +108,9 @@ purgeMemory = ->
 #
 # buildOptimizedWorker = (currentRoom) ->
 #   maxEnergy = currentRoom.energyCapacityAvailable
-#   energyUsed = 0
 #   partsMove = Math.floor maxEnergy / 50 / 5
 #   partsCarry = partsMove
-#   energyUsed += partsMove * 50
+#   energyUsed = partsMove * 50
 #   energyUsed += partsCarry * 50
 #   partsWork = Math.floor (maxEnergy - energyUsed) / 100
 #   body = []
