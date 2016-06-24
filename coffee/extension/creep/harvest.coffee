@@ -3,7 +3,7 @@ resourceDelegator = require 'delegator.resource'
 Creep::aiHarvest = ->
   source = Game.getObjectById(@memory.harvestTarget?.sourceID ? '')
   unless source and @room.lookForAt(LOOK_SOURCES, source)
-    output = resourceDelegator.getFreeSourceHarvestLocationInRoom @room
+    output = resourceDelegator.getFreeSourceHarvestLocationInRoom @room, @name
     @memory.harvestTarget = output
     return false unless @memory.harvestTarget?
     source = Game.getObjectById(@memory.harvestTarget?.sourceID ? '')

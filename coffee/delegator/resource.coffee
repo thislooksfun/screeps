@@ -10,7 +10,7 @@ module.exports =
     return #Block auto-return
   
   
-  getFreeSourceHarvestLocationInRoom: (room) ->
+  getFreeSourceHarvestLocationInRoom: (room, flagName) ->
     resources = Memory.delegators?.resources?[room.name]
     unless resources?
       @loadResources()
@@ -58,7 +58,8 @@ module.exports =
       data.freeTiles &= ~path
       flags = room.lookForAt LOOK_FLAGS, x, y
       flag.remove() for flag in flags
-      # room.createFlag(x, y, null, COLOR_YELLOW)
+      if flagName?
+        room.createFlag(x, y, flagName, COLOR_YELLOW)
       return {sourceID: data.sourceID, pos: new RoomPosition(x, y, room.name), path: path}
     return null
   
