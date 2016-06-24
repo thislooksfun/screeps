@@ -23,7 +23,7 @@ Creep::aiRepairPriorityUrgent = -> return @aiRepairLeveledAmount 500
 Creep::aiRepairPriorityHigh = -> return @aiRepairLeveledAmount 2500
 Creep::aiRepairPriorityMedium = -> return @aiRepairPercent 25
 Creep::aiRepairPriorityLow = -> return @aiRepairPercent 50
-Creep::aiRepairPriorityMininal = -> return @aiRepairPercent 75
+Creep::aiRepairPriorityMinimal = -> return @aiRepairPercent 75
 
 Creep::aiRepairAll = ->
   return @aiRepair (structure) ->
