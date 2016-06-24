@@ -36,8 +36,11 @@ module.exports.loop = ->
     bucket = "bucket: #{Game.cpu.bucket}"
     tickAvg = round(_.sum(Memory.tickAverages) / Memory.tickAverages.length, 3)
     avg = "tick average: #{tickAvg} cpu"
-    if tickAvg > 10
-      Game.notify "Cpu average over the last 20 ticks was higher than 10! (#{tickAvg})"
+    if tickAvg > 10 and Memory.lastTickAvg > 10
+      line1 = 'Cpu average has sustained over 10 cpu for two cycles'
+      line2 = "(current: #{tickAvg}; last: #{Memory.lastTickAvg})"
+      Game.notify "#{line1} #{line2}"
+    Memory.lastTickAvg = tickAvg
     console.log "#{limit}; #{tickLimit}; #{bucket}; #{avg}"
   
   return #Block auto-return
@@ -122,25 +125,6 @@ creepCost = (attrList) ->
   for attr in attrList
     sum += BODYPART_COST[attr]
   return sum
-#
-# getOptimalBody = (spawn) ->
-#   body = []
-#   stats = spawnUtility.getSpawnStats spawn
-#
-#   carryPart = Math.ceil(stats.parts / 5);
-#
-#   for (var i = 0; i < carryPart; i++)
-#     body.push(MOVE)
-#     body.push(CARRY)
-#
-#   while spawnUtility.getBodyCost(body) < stats.energy && body.length < stats.parts
-#     body.push(MOVE)
-#     body.push(WORK)
-#
-#   while spawnUtility.getBodyCost(body) > stats.energy || body.length > stats.parts
-#     body.pop()
-#
-#   return body
 
 round = (value, precision) ->
   multiplier = Math.pow(10, precision or 0)
