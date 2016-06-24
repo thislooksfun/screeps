@@ -58,7 +58,7 @@ module.exports =
       data.freeTiles &= ~path
       flags = room.lookForAt LOOK_FLAGS, x, y
       flag.remove() for flag in flags
-      room.createFlag(x, y, null, COLOR_YELLOW)
+      # room.createFlag(x, y, null, COLOR_YELLOW)
       return {sourceID: data.sourceID, pos: new RoomPosition(x, y, room.name), path: path}
     return null
   

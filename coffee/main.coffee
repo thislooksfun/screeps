@@ -11,18 +11,32 @@ require('extension.creep.harvest')
 require('extension.creep.transfer')
 require('extension.creep.build')
 require('extension.creep.upgrade')
+require('extension.creep.repair')
 require('extension.structure.storage')
 
 module.exports.loop = ->
   
   delegators.resource.loadResources()
   
-  purgeMemory()
-  processMinMax()
+  purgeMemory() if timeForNext 'memoryPurge', 20
+  processMinMax() if timeForNext 'processMinMax', 5
+  if timeForNext 'logCPU', 30
+    console.log "limit: #{Game.cpu.limit}; tickLimit: #{Game.cpu.tickLimit}; bucket: #{Game.cpu.bucket}"
+  
   
   for name, creep of Game.creeps
     roles[creep.memory.role]?.run creep
   return #Block auto-return
+
+
+timeForNext = (name, every = 10) ->
+  Memory.next ?= {}
+  if not Memory.next[name]? or Memory.next[name] <= 0
+    Memory.next[name] = every
+    return true
+  
+  Memory.next[name]--
+  return false
 
 
 processMinMax = ->
@@ -41,24 +55,32 @@ processMinMax = ->
       continue
     
     unless didSpawn
-      didSpawn = true if ensureMin(roleName, min, role.body())
+      #TODO: Multi-room / multi-spawn support
+      didSpawn = true if ensureMin(Game.rooms['W11N26'], roleName, min, role.bodyForRoom)
     if roleName is 'worker' and max <= 0
       console.error 'Aborted -- tried to purge the last worker!'
     else
       purgeMax(roleName, max)
 
-ensureMin = (role, minCount, body) ->
+ensureMin = (room, role, minCount, getBody) ->
+  #TODO: Use room info
   inRole = _.filter Game.creeps, (creep) -> return creep.memory.role is role
   if inRole.length < minCount
+    body = getBody room
     result = Game.spawns.Spawn1.createCreep body, null, {role: role}
     if typeof result is 'string'
-      console.log "Spawning new #{role}: #{result}"
+      console.log "Spawning new #{role}: #{result} - body: [#{body}]"
       return true
     else
-      console.log "error spawning new #{role}: #{result}"
-      # energyToSpawn = 0; //TODO: Figure out how to calculate this
-      # enertyRatio = "#{Game.spawns.Spawn1.energy}/#{energyToSpawn}"
-      # console.log "Insufficient energy for spawning new upgrader #{enertyRatio}"
+      switch result
+        when ERR_BUSY
+          console.log "error spawning new #{role}: Spanwer in use!"
+        when ERR_NOT_ENOUGH_ENERGY
+          energyToSpawn = creepCost body
+          enertyRatio = "#{Game.spawns.Spawn1.energy}/#{energyToSpawn}"
+          console.log "Insufficient energy for spawning new #{role}: #{enertyRatio}"
+        else
+          console.log "error spawning new #{role}: #{result}"
   return false
 
 
@@ -80,12 +102,12 @@ purgeMemory = ->
   return #Block auto-return
 
 
-# droneCost = (attrList) ->
-#   return unless attrList?
-#   sum = 0
-#   for attr in attrList
-#     sum += BODYPART_COST[attr]
-#   return sum
+creepCost = (attrList) ->
+  return unless attrList?
+  sum = 0
+  for attr in attrList
+    sum += BODYPART_COST[attr]
+  return sum
 #
 # getOptimalBody = (spawn) ->
 #   body = []
@@ -103,23 +125,5 @@ purgeMemory = ->
 #
 #   while spawnUtility.getBodyCost(body) > stats.energy || body.length > stats.parts
 #     body.pop()
-#
-#   return body
-#
-# buildOptimizedWorker = (currentRoom) ->
-#   maxEnergy = currentRoom.energyCapacityAvailable
-#   partsMove = Math.floor maxEnergy / 50 / 5
-#   partsCarry = partsMove
-#   energyUsed = partsMove * 50
-#   energyUsed += partsCarry * 50
-#   partsWork = Math.floor (maxEnergy - energyUsed) / 100
-#   body = []
-#
-#   for i in [0...partsMove]
-#     body.push MOVE
-#   for i in [0...partsCarry]
-#     body.push CARRY
-#   for i in [0...partsWork]
-#     body.push WORK
 #
 #   return body
