@@ -20,6 +20,7 @@ module.exports.loop = ->
   
   purgeMemory() if timeForNext 'memoryPurge', 20
   processMinMax() if timeForNext 'processMinMax', 5
+  alertLowBuildSites() if timeForNext 'alertLowBuildSites', 60
   
   
   for name, creep of Game.creeps
@@ -30,18 +31,7 @@ module.exports.loop = ->
   while Memory.tickAverages.length > 20
     Memory.tickAverages.shift()
   
-  if timeForNext 'logCPU', 30
-    limit = "limit: #{Game.cpu.limit}"
-    tickLimit = "tickLimit: #{Game.cpu.tickLimit}"
-    bucket = "bucket: #{Game.cpu.bucket}"
-    tickAvg = round(_.sum(Memory.tickAverages) / Memory.tickAverages.length, 3)
-    avg = "tick average: #{tickAvg} cpu"
-    if tickAvg > 10 and Memory.lastTickAvg > 10
-      line1 = 'Cpu average has sustained over 10 cpu for two cycles'
-      line2 = "(current: #{tickAvg}; last: #{Memory.lastTickAvg})"
-      Game.notify "#{line1} #{line2}"
-    Memory.lastTickAvg = tickAvg
-    console.log "#{limit}; #{tickLimit}; #{bucket}; #{avg}"
+  logCPU() if timeForNext 'logCPU', 30
   
   return #Block auto-return
 
@@ -129,3 +119,25 @@ creepCost = (attrList) ->
 round = (value, precision) ->
   multiplier = Math.pow(10, precision or 0)
   return Math.round(value * multiplier) / multiplier
+
+
+logCPU = ->
+  limit = "limit: #{Game.cpu.limit}"
+  tickLimit = "tickLimit: #{Game.cpu.tickLimit}"
+  bucket = "bucket: #{Game.cpu.bucket}"
+  tickAvg = round(_.sum(Memory.tickAverages) / Memory.tickAverages.length, 3)
+  avg = "tick average: #{tickAvg} cpu"
+  if tickAvg > 10 and Memory.lastTickAvg > 10
+    line1 = 'Cpu average has sustained over 10 cpu for two cycles'
+    line2 = "(current: #{tickAvg}; last: #{Memory.lastTickAvg})"
+    Game.notify "#{line1} #{line2}"
+  Memory.lastTickAvg = tickAvg
+  console.log "#{limit}; #{tickLimit}; #{bucket}; #{avg}"
+
+alertLowBuildSites = ->
+  siteCount = _.size Game.constructionSites
+  if siteCount < 10
+    Game.notify(
+      "Only #{siteCount} constructionSites left! You should schedule more!",
+      60 #Group for 1 hour
+    )
