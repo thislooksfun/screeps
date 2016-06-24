@@ -31,7 +31,7 @@ module.exports.loop = ->
     roles[creep.memory.role]?.run creep
   
   # TODO: Do this for all rooms
-  isTower = (struct) -> return struct.structureType is STRUCTURE_TOWER
+  isTower = {structureType: STRUCTURE_TOWER}
   towers = Game.spawns.Spawn1.room.find FIND_MY_STRUCTURES, {filter: isTower}
   for tower in towers
     tower.aiTick()
@@ -180,12 +180,12 @@ addNewExtensionsInRoom = (room) ->
   for name, flag of Game.flags
     flag.remove()
   
-  extensionFilter = (structure) -> structure.structureType is STRUCTURE_EXTENSION
+  extensionFilter = {structureType: STRUCTURE_EXTENSION}
   extensionsCount = room.find(FIND_MY_STRUCTURES, {filter: extensionFilter}).length
   extensionsCount += room.find(FIND_MY_CONSTRUCTION_SITES, {filter: extensionFilter}).length
   needed = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][room.controller.level] - extensionsCount
   return unless needed > 0
-  spawnFilter = (structure) -> structure.structureType is STRUCTURE_SPAWN
+  spawnFilter = {structureType: STRUCTURE_SPAWN}
   spawn = room.find(FIND_MY_STRUCTURES, {filter: spawnFilter})[0]
   return unless spawn?
   center = spawn.pos
