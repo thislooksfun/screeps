@@ -15,6 +15,7 @@ Creep::aiHarvest = ->
   return true
 
 Creep::aiDoneHarvesting = ->
-  return true unless @memory.harvestTarget?
-  resourceDelegator.stoppedHarvestingAt @memory.harvestTarget
-  delete @memory.harvestTarget
+  if @memory.harvestTarget?
+    resourceDelegator.stoppedHarvestingAt @memory.harvestTarget
+    delete @memory.harvestTarget
+  return true
