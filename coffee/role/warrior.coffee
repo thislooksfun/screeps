@@ -1,9 +1,9 @@
 module.exports =
   
+  countPerRoom: 0
+  
   bodyForRoom: (room) ->
     return [ATTACK, ATTACK, RANGED_ATTACK, TOUGH, TOUGH, TOUGH, TOUGH, MOVE, MOVE]
-  
-  countPerRoom: 0
   
   ### @param {Creep} creep ###
   run: (creep) ->

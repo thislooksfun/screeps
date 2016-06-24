@@ -1,5 +1,7 @@
 module.exports =
   
+  countPerRoom: 3
+  
   bodyForRoom: (room) ->
     maxEnergy = room.energyCapacityAvailable
     partsMove = Math.floor maxEnergy / 50 / 5
@@ -16,8 +18,6 @@ module.exports =
     for i in [0...partsWork]
       body.push WORK
     return body
-  
-  countPerRoom: 2
   
   ### @param {Creep} creep ###
   run: (creep) ->
