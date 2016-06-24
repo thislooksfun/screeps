@@ -1,6 +1,6 @@
 module.exports =
   
-  countPerRoom: 3
+  countPerRoom: 2
   
   bodyForRoom: (room) ->
     maxEnergy = room.energyCapacityAvailable
