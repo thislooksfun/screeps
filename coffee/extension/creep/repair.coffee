@@ -15,14 +15,15 @@ Creep::aiRepair = (healthFilter) ->
 Creep::aiRepairPercent = (percent) ->
   return @aiRepair (structure) -> return structure.hits < (structure.hitsMax * (percent / 100))
 
-Creep::aiRepairUrgent = ->
-  return @aiRepair (structure) ->
-    return structure.hits < 1000 and structure.hits < structure.hitsMax
+Creep::aiRepairLeveledAmount = (healthPerWork) ->
+  return @aiRepair (struct) =>
+    return struct.hits < (healthPerWork * @partCount(WORK)) and struct.hits < struct.hitsMax
 
-Creep::aiRepairHigh = -> return @aiRepairPercent 5
-Creep::aiRepairMedium = -> return @aiRepairPercent 25
-Creep::aiRepairLow = -> return @aiRepairPercent 50
-Creep::aiRepairMininal = -> return @aiRepairPercent 75
+Creep::aiRepairPriorityUrgent = -> return @aiRepairLeveledAmount 500
+Creep::aiRepairPriorityHigh = -> return @aiRepairLeveledAmount 2500
+Creep::aiRepairPriorityMedium = -> return @aiRepairPercent 25
+Creep::aiRepairPriorityLow = -> return @aiRepairPercent 50
+Creep::aiRepairPriorityMininal = -> return @aiRepairPercent 75
 
 Creep::aiRepairAll = ->
   return @aiRepair (structure) ->

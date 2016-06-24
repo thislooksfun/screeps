@@ -28,13 +28,13 @@ module.exports =
     if creep.memory.isWorking
       # TODO: Add upgrading in here?
       # TODO: Add task delegation? (x ticks and/or x creeps per task?)
-      return if creep.aiRepairUrgent()
+      return if creep.aiRepairPriorityUrgent()
       return if creep.aiTransferEnergy()
       return if creep.aiBuild()
-      return if creep.aiRepairHigh()
-      return if creep.aiRepairMedium()
-      return if creep.aiRepairLow()
-      return if creep.aiRepairMinimal()
+      return if creep.aiRepairPriorityHigh()
+      return if creep.aiRepairPriorityMedium()
+      return if creep.aiRepairPriorityLow()
+      return if creep.aiRepairPriorityMinimal()
       return if creep.aiRepairAll()
     else
       creep.aiHarvest()
