@@ -4,11 +4,14 @@ module.exports =
   
   bodyForRoom: (room) ->
     maxEnergy = room.energyCapacityAvailable
+    if maxEnergy > 3600
+      maxEnergy = 3600 #Magic number to have 50 conponents (which is the max)
     partsMove = Math.floor maxEnergy / 50 / 5
     partsCarry = partsMove
     energyUsed = partsMove * 50
     energyUsed += partsCarry * 50
     partsWork = Math.floor (maxEnergy - energyUsed) / 100
+    
     body = []
     
     for i in [0...partsMove]
