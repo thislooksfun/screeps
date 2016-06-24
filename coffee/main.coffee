@@ -1,18 +1,21 @@
 delegators =
-  resource: require('delegator.resource')
+  resource: require 'delegator.resource'
 
 roles =
   worker: require 'role.worker'
-  upgrader: require('role.upgrader')
-  warrior: require('role.warrior')
+  upgrader: require 'role.upgrader'
+  warrior: require 'role.warrior'
 
-require('extension.creep.base')
-require('extension.creep.harvest')
-require('extension.creep.transfer')
-require('extension.creep.build')
-require('extension.creep.upgrade')
-require('extension.creep.repair')
-require('extension.structure.storage')
+require 'extension.creep.base'
+require 'extension.creep.harvest'
+require 'extension.creep.transfer'
+require 'extension.creep.build'
+require 'extension.creep.upgrade'
+require 'extension.creep.repair'
+
+require 'extension.room'
+require 'extension.structure.storage'
+require 'extension.structure.tower'
 
 module.exports.loop = ->
   
@@ -21,10 +24,17 @@ module.exports.loop = ->
   purgeMemory() if timeForNext 'memoryPurge', 20
   processMinMax() if timeForNext 'processMinMax', 5
   alertLowBuildSites() if timeForNext 'alertLowBuildSites', 60
-  
+  convertFlagsToBuildSites() if timeForNext 'convertFlagsToBuildSites', 60
+  upgradeRoomsToMatchRCL() if timeForNext 'upgradeRoomsToMatchRCL', 60
   
   for name, creep of Game.creeps
     roles[creep.memory.role]?.run creep
+  
+  # TODO: Do this for all rooms
+  isTower = (struct) -> return struct.structureType is STRUCTURE_TOWER
+  towers = Game.spawns.Spawn1.room.find FIND_MY_STRUCTURES, {filter: isTower}
+  for tower in towers
+    tower.aiTick()
   
   Memory.tickAverages ?= []
   Memory.tickAverages.push Game.cpu.getUsed()
@@ -63,11 +73,12 @@ processMinMax = ->
     
     unless didSpawn
       #TODO: Multi-room / multi-spawn support
-      didSpawn = true if ensureMin(Game.rooms['W11N26'], roleName, min, role.bodyForRoom)
+      didSpawn = true if ensureMin(Game.spawns.Spawn1.room, roleName, min, role.bodyForRoom)
     if roleName is 'worker' and max <= 0
       console.error 'Aborted -- tried to purge the last worker!'
     else
       purgeMax(roleName, max)
+  return #Block auto-return
 
 ensureMin = (room, role, minCount, getBody) ->
   #TODO: Use room info
@@ -133,6 +144,7 @@ logCPU = ->
     Game.notify "#{line1} #{line2}"
   Memory.lastTickAvg = tickAvg
   console.log "#{limit}; #{tickLimit}; #{bucket}; #{avg}"
+  return #Block auto-return
 
 alertLowBuildSites = ->
   siteCount = _.size Game.constructionSites
@@ -141,3 +153,68 @@ alertLowBuildSites = ->
       "Only #{siteCount} constructionSites left! You should schedule more!",
       60 #Group for 1 hour
     )
+  return #Block auto-return
+
+convertFlagsToBuildSites = ->
+  for flagName, flag of Game.flags
+    continue unless flagName.startsWith 'build_'
+    building = flagName.substring 6, flagName.lastIndexOf '_'
+    res = flag.room.createConstructionSite(flag.pos, building)
+    switch res
+      when ERR_FULL, ERR_RCL_NOT_ENOUGH
+        flag.setColor COLOR_ORANGE, COLOR_RED
+      else
+        #Remove the flag if it the const site was added or is impossible to place
+        flag.remove()
+  return #Block auto-return
+
+
+
+upgradeRoomsToMatchRCL = ->
+  for roomName, room of Game.rooms
+    addNewExtensionsInRoom room
+  return #Block auto-return
+
+addNewExtensionsInRoom = (room) ->
+  
+  for name, flag of Game.flags
+    flag.remove()
+  
+  extensionFilter = (structure) -> structure.structureType is STRUCTURE_EXTENSION
+  extensionsCount = room.find(FIND_MY_STRUCTURES, {filter: extensionFilter}).length
+  extensionsCount += room.find(FIND_MY_CONSTRUCTION_SITES, {filter: extensionFilter}).length
+  needed = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][room.controller.level] - extensionsCount
+  return unless needed > 0
+  spawnFilter = (structure) -> structure.structureType is STRUCTURE_SPAWN
+  spawn = room.find(FIND_MY_STRUCTURES, {filter: spawnFilter})[0]
+  return unless spawn?
+  center = spawn.pos
+  squareSize = 1
+  while needed > 0
+    squareSize += 4
+    half = Math.floor squareSize / 2
+    for x in [-half..half]
+      for y in [-half..half]
+        continue unless Math.abs(x) is half or Math.abs(y) is half #Only use the edges
+        if Math.abs(x) is half and Math.abs(y) is half #Fill the corners with roads, not extensions
+          res = room.createConstructionSite(center.x + x, center.y + y, STRUCTURE_ROAD)
+          switch res
+            when OK, ERR_INVALID_TARGET, ERR_INVALID_ARGS then continue
+            else needed = -1 #something's gone wrong, abort
+        else
+          continue if needed <= 0
+          res = room.createConstructionSite(center.x + x, center.y + y, STRUCTURE_EXTENSION)
+          switch res
+            when OK then needed--
+            when ERR_INVALID_TARGET, ERR_INVALID_ARGS then continue
+            else needed = -1 #something's gone wrong, abort
+  
+  squareSize += 6
+  while squareSize > 0
+    squareSize -= 4
+    half = Math.floor squareSize / 2
+    for x in [-half..half]
+      for y in [-half..half]
+        continue unless Math.abs(x) is half or Math.abs(y) is half #Only use the edges
+        room.createConstructionSite(center.x + x, center.y + y, STRUCTURE_ROAD)
+  return #Block auto-return
