@@ -73,7 +73,7 @@ module.exports =
     room = Game.rooms[pos.roomName]
     flags = room.lookForAt LOOK_FLAGS, pos.x, pos.y
     flag.remove() for flag in flags
-    room.createFlag(pos.x, pos.y, null, COLOR_GREEN)
+    return #Block auto-return
   
   
   loadResourcesForRoom: (room) ->
