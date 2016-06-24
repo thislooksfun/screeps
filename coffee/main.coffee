@@ -20,12 +20,26 @@ module.exports.loop = ->
   
   purgeMemory() if timeForNext 'memoryPurge', 20
   processMinMax() if timeForNext 'processMinMax', 5
-  if timeForNext 'logCPU', 30
-    console.log "limit: #{Game.cpu.limit}; tickLimit: #{Game.cpu.tickLimit}; bucket: #{Game.cpu.bucket}"
   
   
   for name, creep of Game.creeps
     roles[creep.memory.role]?.run creep
+  
+  Memory.tickAverages ?= []
+  Memory.tickAverages.push Game.cpu.getUsed()
+  while Memory.tickAverages.length > 20
+    Memory.tickAverages.shift()
+  
+  if timeForNext 'logCPU', 30
+    limit = "limit: #{Game.cpu.limit}"
+    tickLimit = "tickLimit: #{Game.cpu.tickLimit}"
+    bucket = "bucket: #{Game.cpu.bucket}"
+    tickAvg = round(_.sum(Memory.tickAverages) / Memory.tickAverages.length, 3)
+    avg = "tick average: #{tickAvg} cpu"
+    if tickAvg > 10
+      Game.notify "Cpu average over the last 20 ticks was higher than 10! (#{tickAvg})"
+    console.log "#{limit}; #{tickLimit}; #{bucket}; #{avg}"
+  
   return #Block auto-return
 
 
@@ -127,3 +141,7 @@ creepCost = (attrList) ->
 #     body.pop()
 #
 #   return body
+
+round = (value, precision) ->
+  multiplier = Math.pow(10, precision or 0)
+  return Math.round(value * multiplier) / multiplier
