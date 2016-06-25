@@ -1,5 +1,7 @@
 ## Screeps
 
+License: [GPL v3](https://github.com/thislooksfun/screeps/blob/master/LICENSE.md)
+
 Just a small repo to host my [Screeps](http://screeps.com) scripts.
 
 If you want to run these yourself, add a file `secret.js` (or `secret.coffee`) to the main directory, with the following contents:
