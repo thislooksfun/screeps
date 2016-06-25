@@ -176,10 +176,6 @@ upgradeRoomsToMatchRCL = ->
   return #Block auto-return
 
 addNewExtensionsInRoom = (room) ->
-  
-  for name, flag of Game.flags
-    flag.remove()
-  
   extensionFilter = {structureType: STRUCTURE_EXTENSION}
   extensionsCount = room.find(FIND_MY_STRUCTURES, {filter: extensionFilter}).length
   extensionsCount += room.find(FIND_MY_CONSTRUCTION_SITES, {filter: extensionFilter}).length
