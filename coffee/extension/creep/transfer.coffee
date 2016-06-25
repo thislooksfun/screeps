@@ -14,7 +14,7 @@ Creep::aiTransfer = (type, isValidStorageStructure, sortStorage) ->
 
 # hightest # = hightest priority
 energyContainerPreference =
-  "#{STRUCTURE_SPAWN}": 4
+  "#{STRUCTURE_SPAWN}": 3
   "#{STRUCTURE_EXTENSION}": 3
   "#{STRUCTURE_TOWER}": 2
   "#{STRUCTURE_CONTAINER}": 1
