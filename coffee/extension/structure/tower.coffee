@@ -13,15 +13,15 @@ StructureTower::aiAttack = ->
 StructureTower::aiHeal = ->
   lowHealth = (creep) -> return creep.hits < creep.hitsMax
   lowHealthCreeps = @room.find FIND_MY_CREEPS, {filter: lowHealth}
-  lowHealthCreeps.sort (a, b) -> return a.hits - b.hits
   return false unless lowHealthCreeps.length > 0
+  lowHealthCreeps.sort (a, b) -> return a.hits - b.hits
   @heal lowHealthCreeps[0]
   return true
 
 StructureTower::aiRepair = ->
   lowHealth = (struct) -> return struct.hits < struct.hitsMax
   lowHealthStructs = @room.find FIND_MY_STRUCTURES, {filter: lowHealth}
-  lowHealthStructs.sort (a, b) -> return a.hits - b.hits
   return false unless lowHealthStructs.length > 0
+  lowHealthStructs.sort (a, b) -> return a.hits - b.hits
   @repair lowHealthStructs[0]
   return true
