@@ -40,7 +40,7 @@ module.exports.loop = ->
   
   Memory.tickAverages ?= []
   Memory.tickAverages.push Game.cpu.getUsed()
-  while Memory.tickAverages.length > 20
+  while Memory.tickAverages.length > 40
     Memory.tickAverages.shift()
   
   logCPU() if timeForNext 'logCPU', 30
