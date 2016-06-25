@@ -1,6 +1,6 @@
 ## Screeps
 
-License: [GPL v3](https://github.com/thislooksfun/screeps/blob/master/LICENSE.md)
+*License: [GPL v3](https://github.com/thislooksfun/screeps/blob/master/LICENSE.md)*
 
 Just a small repo to host my [Screeps](http://screeps.com) scripts.
 
