@@ -30,8 +30,13 @@ module.exports.loop = ->
   upgradeRoomsToMatchRCL() if timeForNext 'upgradeRoomsToMatchRCL', 60
   delete Memory.delegators.resource if timeForNext 'refreshResourceDelegator', 200
   
+  anyCreeps = false
   for name, creep of Game.creeps
+    anyCreeps = true
     roles[creep.memory.role]?.run creep
+  #If there are no creeps, spawn a new one!
+  unless anyCreeps
+    Game.spawns.Spawn1.createCreep [WORK, CARRY, MOVE], null, {role: 'worker'}
   
   # TODO: Do this for all rooms
   isTower = {structureType: STRUCTURE_TOWER}
