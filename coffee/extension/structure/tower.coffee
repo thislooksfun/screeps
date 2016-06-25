@@ -19,8 +19,11 @@ StructureTower::aiHeal = ->
   return true
 
 StructureTower::aiRepair = ->
-  lowHealth = (struct) -> return struct.hits < struct.hitsMax
-  lowHealthStructs = @room.find FIND_MY_STRUCTURES, {filter: lowHealth}
+  lowHealth = (struct) ->
+    return false if struct.structureType is STRUCTURE_ROAD
+    return false if struct.hits > 10000
+    return struct.hits < struct.hitsMax
+  lowHealthStructs = @room.find FIND_STRUCTURES, {filter: lowHealth}
   return false unless lowHealthStructs.length > 0
   lowHealthStructs.sort (a, b) -> return a.hits - b.hits
   @repair lowHealthStructs[0]
