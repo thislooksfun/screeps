@@ -1,3 +1,5 @@
+console.log 'loading files'
+
 delegators =
   resource: require 'delegator.resource'
 
