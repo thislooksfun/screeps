@@ -28,6 +28,7 @@ module.exports.loop = ->
   alertLowBuildSites() if timeForNext 'alertLowBuildSites', 60
   convertFlagsToBuildSites() if timeForNext 'convertFlagsToBuildSites', 60
   upgradeRoomsToMatchRCL() if timeForNext 'upgradeRoomsToMatchRCL', 60
+  delete Memory.delegators.resource if timeForNext 'refreshResourceDelegator', 200
   
   for name, creep of Game.creeps
     roles[creep.memory.role]?.run creep
