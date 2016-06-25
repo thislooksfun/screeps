@@ -24,7 +24,7 @@ Creep::aiRepair = (healthFilter) ->
   targets.sort (a, b) =>
     diff = a.hits - b.hits
     return diff unless diff is 0
-    return @distanceTo(a.pos) - @distanceTo(b.pos)
+    return @pos.getRangeTo(a.pos) - @pos.getRangeTo(b.pos)
   
   if @repair(targets[0]) is ERR_NOT_IN_RANGE
     @moveTo targets[0]
