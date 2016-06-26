@@ -8,7 +8,7 @@ module.exports = (grunt) ->
       options:
         email: secret.email
         password: secret.password
-        branch: grunt.option('branch') ? 'default'
+        branch: grunt.option('branch') ? 'test'
         ptr: false
       dist:
         src: ['dist/*.js']
