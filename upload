@@ -1,13 +1,20 @@
+#!/bin/bash
+
 mkdir compilefrom
+mkdir dist
 
 cd coffee
-for f in $(find . -name '*.coffee'); do
+for f in $(find . -name '*.coffee' -o -name '*.js'); do
   f1="${f/.\//}"
   cp $f "../compilefrom/${f1//\//.}"
 done
 cd ..
 
+# Compile and copy .coffee files
 coffee -b -o dist -c compilefrom
+# Copy .js files
+find compilefrom -name \*.js -exec cp {} dist \;
+
 
 if [ -n "${1+x}" ]; then
   echo "Branch! $1"
