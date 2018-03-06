@@ -17,7 +17,7 @@
   "homepage": "https://github.com/thislooksfun/screeps#readme",
   "dependencies": {
     "grunt": "^1.0.1",
-    "grunt-contrib-coffee": "^1.0.0",
+    "grunt-contrib-coffee": "^2.0.0",
     "grunt-screeps": "^1.2.1"
   }
 }
